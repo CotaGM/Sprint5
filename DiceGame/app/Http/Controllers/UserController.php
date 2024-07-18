@@ -33,4 +33,24 @@ class UserController extends Controller
 
         return response()->json($user, 200);
     }
+
+    //LOGIN (POST) [email, password]
+    public function login(Request $request){
+
+    }
+
+    //PROFILE (GET) (Auth Token - Header)
+    public function profile(){
+
+    }
+
+    //REFRESH TOKEN (GET) (Auth Token -Header)
+    public function refreshToken(){
+  
+    }
+
+    //LOGOUT (GET) (Auth Token -Header)
+    public function logout(){
+    
+    }
 }
