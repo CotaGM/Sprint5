@@ -24,9 +24,8 @@ Route::group([
     Route::get('/profile', [UserController::class, "profile"]); //
     Route::get('/refresh-token', [UserController::class, "refreshToken"]);
     Route::get('/logout', [UserController::class, "logout"]);
+    Route::put('/players/{id}', [UserController::class, "updateUser"]);
 });
-
-
 
 
 //Route::get('/players', [UserController::class, 'getList']);
