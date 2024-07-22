@@ -86,8 +86,7 @@ class UserController extends Controller
         'status' => true,
         'message' => "User profile data",
         'message' => $user,
-
-    ]);
+      ]);
 
     }
 
