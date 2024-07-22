@@ -14,24 +14,27 @@ class UserController extends Controller
     //REGISTRATION (POST) [nickname, email, password] 
     public function register(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'nickname' => 'required|string|unique:users,nickname|max:100',
-            'email' => 'nullable|string|email|unique:users',
-            'password' => 'required|string|min:8',
+
+        $request -> validate([
+            'nickname' => 'nullable|string|max:255',
+            'email' => 'required|email',
+            'password' => 'required|min:6',
         ]);
 
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
+        if($request->nickname === null) {
+            $request->merge(['nickname' => 'Anonymous']);
         }
 
-        $user = User::create([
+        
+        User::create([
+            'nickname' => $request->nickname,
             'email' => $request->email,
-            'nickname' => $request->nickname ?? 'Anonymous',
-            'password' => Hash::make($request->password),
+            'password' => $request->password,
             'role' => 'player',
         ]);
 
-        return response()->json($user, 200);
+        return response()->json(['message' => 'Successfully created user!',
+        ], 201);
     }
 
     //LOGIN (POST) [email, password]
