@@ -8,7 +8,6 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 
-
 class UserController extends Controller
 {
     
@@ -35,56 +34,61 @@ class UserController extends Controller
 
         return response()->json([
             'status' => true,
-            'message' => "User registered succesfully!",
+            'message' => 'User registered succesfully!',
         ], 201);
     }
 
-    //LOGIN API (POST)[email, password]
-
+    //LOGIN (POST) [email, password]
     public function login(Request $request){
-      
-        //Validation
-      $request -> validate([
-        'email' => 'required|email',
-        'password' => 'required',
-      ]);
-
-      //Check user by "email" value
-      $user = User::where("email", $request -> email)->first();
-
-      //Check user by "password" value
-      if(!empty($user)){
-
-        if(Hash::check($request -> password, $user->password)){
-            
-            //Auth Token value
-          $token = $user -> createToken("myToken")->accessToken;
-          
-          return response()->json([
-            'status' => true,
-            'message' => "User logged in succesfully",
-            'token' => $token  
-          ]);
-          
-        }else{
-            return response()->json([
-                'status' => false,
-                'message' => "Password didn't match",  
-            ]);
-        }
-     }else{
-        return response()->json([
-            'status' => false,
-            'message' => "Invalid credentials",
-        ]);
-      }
-    }
-
-    //PROFILE (GET) (Auth Token - Header)
-    public function profile(Request $request){
-      
      
-      
+        //Validation
+        $request -> validate([
+          'email' => 'required|email',
+          'password' => 'required',
+        ]);
+  
+        //Check user by "email" value
+        $user = User::where("email", $request -> email)->first();
+  
+        //Check user by "password" value
+        if(!empty($user)){
+  
+          if(Hash::check($request -> password, $user->password)){
+              
+              //Auth Token value
+            $token = $user -> createToken("myToken")->accessToken;
+            
+            return response()->json([
+              'status' => true,
+              'message' => "User logged in succesfully",
+              'token' => $token  
+            ]);
+            
+          }else{
+              return response()->json([
+                  'status' => false,
+                  'message' => "Password didn't match",  
+              ]);
+          }
+       }else{
+          return response()->json([
+              'status' => false,
+              'message' => "Invalid credentials",
+          ]);
+        }
+      }
+    //PROFILE (GET) (Auth Token - Header)
+    public function profile(){
+
+      $user = Auth::user();
+
+      return response()->json([
+        'status' => true,
+        'message' => "User profile data",
+        'message' => $user,
+
+    ]);
+
     }
 
     //REFRESH TOKEN (GET) (Auth Token -Header)
