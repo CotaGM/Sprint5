@@ -7,25 +7,27 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
-use Laravel\Passport\Passport;
+
 
 class UserController extends Controller
 {
     
     //REGISTRATION (POST) [nickname, email, password] 
-    public function register(Request $request)
-    {
-
-        $request -> validate([
-            'nickname' => 'nullable|string|max:100|unique:users',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|confirmed|min:6',
-        ]);
-
+    public function register(Request $request){
+        
+      //validation
+      $request -> validate([
+        'nickname' => 'nullable|string|max:100|unique:users',
+        'email' => 'required|email|unique:users',
+        'password' => 'required|confirmed|min:6',
+      ]);
+        
+        //Anonymous user
         if($request->nickname === null) {
             $request->merge(['nickname' => 'Anonymous']);
         }
 
+        //create user
         User::create([
             'nickname' => $request->nickname,
             'email' => $request->email,
@@ -36,8 +38,40 @@ class UserController extends Controller
         return response()->json([
             'status' => true,
             'message' => 'User registered succesfully!',
-        ], 201);
+        ]);
+        
     }
+    
+    //UPDATE (PUT) [nickname, email, password] 
+    public function updateUser(Request $request, $id){
+        
+      // Find user
+      $user = User::find($id);
+      if (!$user) {
+        return response()->json([
+          'status' => false,
+          'message' => 'User not found',
+        ]);
+      }
+
+      //Validation
+      $request->validate([
+      'nickname' => 'nullable|string|max:100|unique:users',
+      ]);
+  
+      //Anonymous user
+      $user->nickname = $request->nickname ?? 'Anonymous';
+
+      //save nickname
+      $user->save();
+
+      return response()->json([
+        'status' => true,
+        'message' => 'User nickname updated successfully',
+        'user' => $user,
+      ]);
+
+  }
 
     //LOGIN (POST) [email, password]
     public function login(Request $request){
@@ -77,7 +111,9 @@ class UserController extends Controller
               'message' => "Invalid credentials",
           ]);
         }
+
       }
+
     //PROFILE (GET) (Auth Token - Header)
     public function profile(){
 
@@ -115,6 +151,6 @@ class UserController extends Controller
         'message' => "User logged out",
       ]);
 
-    
     }
+
 }
