@@ -92,7 +92,7 @@ class UserController extends Controller
 
     //REFRESH TOKEN (GET) (Auth Token -Header)
     public function refreshToken(){
-  
+       $user
     }
 
     //LOGOUT (GET) (Auth Token -Header)
