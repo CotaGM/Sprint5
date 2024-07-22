@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 
 class UserController extends Controller
@@ -82,7 +83,8 @@ class UserController extends Controller
     //PROFILE (GET) (Auth Token - Header)
     public function profile(Request $request){
       
-       
+     
+      
     }
 
     //REFRESH TOKEN (GET) (Auth Token -Header)
