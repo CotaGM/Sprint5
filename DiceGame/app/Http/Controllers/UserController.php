@@ -6,7 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
+
 
 class UserController extends Controller
 {
@@ -16,24 +16,25 @@ class UserController extends Controller
     {
 
         $request -> validate([
-            'nickname' => 'nullable|string|max:255',
-            'email' => 'required|email',
-            'password' => 'required|min:6',
+            'nickname' => 'nullable|string|max:100|unique:users',
+            'email' => 'required|email|unique:users',
+            'password' => 'required|confirmed|min:6',
         ]);
 
         if($request->nickname === null) {
             $request->merge(['nickname' => 'Anonymous']);
         }
 
-        
         User::create([
             'nickname' => $request->nickname,
             'email' => $request->email,
-            'password' => $request->password,
+            'password' => Hash::make($request->password),
             'role' => 'player',
         ]);
 
-        return response()->json(['message' => 'Successfully created user!',
+        return response()->json([
+            'status' => true,
+            'message' => 'User registered succesfully!',
         ], 201);
     }
 
