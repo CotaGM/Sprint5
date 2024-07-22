@@ -85,14 +85,23 @@ class UserController extends Controller
       return response()->json([
         'status' => true,
         'message' => "User profile data",
-        'message' => $user,
+        'user' => $user,
       ]);
 
     }
 
     //REFRESH TOKEN (GET) (Auth Token -Header)
     public function refreshToken(){
+      $user = request () -> user (); //user data
+      $token = $user -> createToken("newToken");
+
+      $refreshToken = $token ->accessToken;
      
+      return response()->json([
+        'status' => true,
+        'message' => "Refresh token",
+        'token' => $refreshToken,
+      ]);
     }
 
     //LOGOUT (GET) (Auth Token -Header)
