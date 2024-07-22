@@ -15,8 +15,28 @@ class UserController extends Controller
     public function register(Request $request)
     {
 
-    }
+        $request -> validate([
+            'nickname' => 'nullable|string|max:100|unique:users',
+            'email' => 'required|email|unique:users',
+            'password' => 'required|confirmed|min:6',
+        ]);
 
+        if($request->nickname === null) {
+            $request->merge(['nickname' => 'Anonymous']);
+        }
+
+        User::create([
+            'nickname' => $request->nickname,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'role' => 'player',
+        ]);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'User registered succesfully!',
+        ], 201);
+    }
     //PROFILE (GET) (Auth Token - Header)
     public function profile(){
 
