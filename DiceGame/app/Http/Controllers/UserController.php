@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Laravel\Passport\Passport;
 
 class UserController extends Controller
 {
@@ -106,6 +107,14 @@ class UserController extends Controller
 
     //LOGOUT (GET) (Auth Token -Header)
     public function logout(){
+      
+      request()->user()->tokens()->delete();
+
+      return response()->json([
+        'status' => true,
+        'message' => "User logged out",
+      ]);
+
     
     }
 }
