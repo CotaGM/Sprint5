@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Auth;
 
 class GameController extends Controller
 {
-   
     public function throwDices(Request $request, int $id)
     {
         // find and verify user
@@ -53,4 +52,5 @@ class GameController extends Controller
         ]);
     }
 
+    
 }
