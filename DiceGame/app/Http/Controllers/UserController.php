@@ -233,5 +233,32 @@ class UserController extends Controller
     ]);
   }
 
-}
-  
+  public function getPlayerList(){
+
+    // get players
+    $user = User::with('games')
+      ->where('role', 'player') // Filtrar solo jugadores
+      ->get();
+
+    // Mapping all players
+    $playersData = $user->map(function ($user) {
+      $totalGames = $user->games->count();
+      $totalWins = $user->games->where('result', true)->count();
+
+      // Percentage
+      $averageSuccessRate = $totalGames > 0 ? ($totalWins / $totalGames) * 100 : 0;
+
+      return [
+        'id' => $user->id,
+        'nickname' => $user->nickname,
+        'success_rate' => $averageSuccessRate
+      ];
+      
+    });
+
+    return response()->json([
+        'players' => $playersData
+    ]);
+  }
+
+}  
