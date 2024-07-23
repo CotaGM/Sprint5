@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\GameController;
 
 /*Route::get('/user', function (Request $request) {
     return $request->user();
@@ -25,6 +26,13 @@ Route::group([
     Route::get('/refresh-token', [UserController::class, "refreshToken"]);
     Route::get('/logout', [UserController::class, "logout"]);
     Route::put('/players/{id}', [UserController::class, "updateUser"]);
+});
+
+// Player Routes
+Route::group([
+    'middleware' => ["auth:api"]
+], function () {
+    Route::post('/players/{id}/games', [GameController::class, 'playGame']);
 });
 
 
