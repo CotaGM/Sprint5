@@ -174,7 +174,8 @@ class UserController extends Controller
     
     //LOSER (GET)
     public function getLoser(){
-
+      
+      //get players
       $users = User::all();
       $lowestRate = PHP_INT_MAX; 
       $worstPlayer = null;
@@ -183,7 +184,7 @@ class UserController extends Controller
       $totalGames = $user->games->count(); 
       $totalWins = $user->games->where('result', true)->count(); 
 
-      // Porcentage
+      // Percentage
       $successRate = $totalGames > 0 ? ($totalWins / $totalGames) * 100 : 0;
 
         // find the looser
@@ -191,7 +192,7 @@ class UserController extends Controller
           $lowestRate = $successRate;
           $worstPlayer = $user;
         }
-    }
+      }
 
       return response()->json([
        'player' => [
@@ -202,6 +203,35 @@ class UserController extends Controller
       ]);
 
     }
-    
+
+    public function getWinner(){
+    // get players
+    $users = User::all();
+    $highestRate = 0; 
+    $bestPlayer = null;
+
+    foreach ($users as $user) {
+      $totalGames = $user->games->count(); 
+      $totalWins = $user->games->where('result', true)->count(); 
+
+      // Percentage
+      $successRate = $totalGames > 0 ? ($totalWins / $totalGames) * 100 : 0;
+
+      // find the winner
+      if ($successRate > $highestRate) {
+        $highestRate = $successRate;
+        $bestPlayer = $user;
+      }
+    }
+
+    return response()->json([
+      'player' => [
+      'id' => $bestPlayer->id,
+      'nickname' => $bestPlayer->nickname,
+      'success_rate' => $highestRate
+      ]
+    ]);
+  }
+
 }
   
