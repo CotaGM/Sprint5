@@ -32,7 +32,7 @@ Route::group([
 Route::group([
     'middleware' => ["auth:api"]
 ], function () {
-    Route::post('/players/{id}/games', [GameController::class, 'playGame']);
+    Route::post('/players/{id}/games', [GameController::class, 'throwDices']);//un jugador/a específico realiza un tirón de los dados.
 });
 
 
