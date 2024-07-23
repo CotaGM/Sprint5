@@ -23,7 +23,7 @@ Route::middleware(['auth:api'])->group(function () {
     Route::get('/profile', [UserController::class, 'profile']);
     Route::get('/refresh-token', [UserController::class, 'refreshToken']);
     Route::get('/logout', [UserController::class, 'logout']);
-    Route::put('/players/{id}', [UserController::class, 'updateUser']);
+    Route::put('/players/{id}', [UserController::class, 'updateUser']);//modifica el nombre del jugador/a.
 
     // player
     Route::middleware(['can:is-player'])->group(function () {
@@ -34,9 +34,9 @@ Route::middleware(['auth:api'])->group(function () {
 
     // Admin
     Route::middleware(['can:is-admin'])->group(function () {
-        Route::get('/players', [UserController::class, 'getAllPlayers']);
+        Route::get('/players', [UserController::class, 'getPlayerList']);
         Route::get('/players/ranking', [UserController::class, 'getRanking']); // Devuelve el ranking medio de todos los jugadores/as del sistema
-        Route::get('/players/ranking/loser', [UserController::class, 'getLoser']);
-        Route::get('/players/ranking/winner', [UserController::class, 'getWinner']);
+        Route::get('/players/ranking/loser', [UserController::class, 'getLoser']);// devuelve al jugador/a con peor porcentaje de éxito
+        Route::get('/players/ranking/winner', [UserController::class, 'getWinner']);// devuelve al jugador/a con mejor porcentaje de éxito 
     });
 });
