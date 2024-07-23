@@ -257,8 +257,10 @@ class UserController extends Controller
     });
 
     return response()->json([
-        'players' => $playersData
+      'players' => $playersData
     ]);
   }
 
-}  
+
+}
+

@@ -52,5 +52,29 @@ class GameController extends Controller
         ]);
     }
 
+    public function getGames($id){
+    
+    // Finding user
+    $user = User::find($id);
+
+    // Amount of games per player 
+    $games = $user->games; 
+
+    // Mapping games
+    $gamesData = $games->map(function ($game) {
+     return [
+      'id' => $game->id,
+      'dice1' => $game->dice1,
+      'dice2' => $game->dice2,
+      'result' => $game->result,
+     ];
+    });
+
+      return response()->json([
+       'status' => true,
+       'games' => $gamesData,
+      ]);
+  }
+
     
 }
