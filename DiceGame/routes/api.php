@@ -35,7 +35,7 @@ Route::middleware(['auth:api'])->group(function () {
     // Admin
     Route::middleware(['can:is-admin'])->group(function () {
         Route::get('/players', [UserController::class, 'getAllPlayers']);
-        Route::get('/players/ranking', [UserController::class, 'getAverageSuccessRate']); // Devuelve el ranking medio de todos los jugadores/as del sistema
+        Route::get('/players/ranking', [UserController::class, 'getRanking']); // Devuelve el ranking medio de todos los jugadores/as del sistema
         Route::get('/players/ranking/loser', [UserController::class, 'getLoser']);
         Route::get('/players/ranking/winner', [UserController::class, 'getWinner']);
     });

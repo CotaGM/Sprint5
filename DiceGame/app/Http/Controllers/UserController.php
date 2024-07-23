@@ -153,7 +153,8 @@ class UserController extends Controller
 
     }
     
-    public function getAverageSuccessRate()
+    //RANKING(GET)
+    public function getRanking()
     {
       $users = User::all();
       $totalGames = 0;
@@ -164,11 +165,43 @@ class UserController extends Controller
         $totalWins += $user->games->where('result', true)->count();
       }
 
-        $averageSuccessRate = ($totalWins / $totalGames) * 100;
+        $successRate = $totalGames > 0 ? ($totalWins / $totalGames) * 100 : 0;
   
       return response()->json([
-        'average_success_rate' => $averageSuccessRate
+        'average_success_rate' => $successRate
       ]);
     }
+    
+    //LOSER (GET)
+    public function getLoser(){
+
+      $users = User::all();
+      $lowestRate = PHP_INT_MAX; 
+      $worstPlayer = null;
+
+      foreach ($users as $user) {
+      $totalGames = $user->games->count(); 
+      $totalWins = $user->games->where('result', true)->count(); 
+
+      // Porcentage
+      $successRate = $totalGames > 0 ? ($totalWins / $totalGames) * 100 : 0;
+
+        // find the looser
+        if ($successRate < $lowestRate) {
+          $lowestRate = $successRate;
+          $worstPlayer = $user;
+        }
+    }
+
+      return response()->json([
+       'player' => [
+       'id' => $worstPlayer->id,
+       'nickname' => $worstPlayer->nickname,
+       'success_rate' => $lowestRate
+       ]
+      ]);
+
+    }
+    
 }
   
