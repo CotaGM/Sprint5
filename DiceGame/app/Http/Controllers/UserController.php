@@ -143,7 +143,7 @@ class UserController extends Controller
 
     //LOGOUT (GET) (Auth Token -Header)
     public function logout(){
-      
+
       request()->user()->tokens()->delete();
 
       return response()->json([
@@ -152,5 +152,23 @@ class UserController extends Controller
       ]);
 
     }
-     
-  }
+    
+    public function getAverageSuccessRate()
+    {
+      $users = User::all();
+      $totalGames = 0;
+      $totalWins = 0;
+
+      foreach ($users as $user) {
+        $totalGames += $user->games->count();
+        $totalWins += $user->games->where('result', true)->count();
+      }
+
+        $averageSuccessRate = ($totalWins / $totalGames) * 100;
+  
+      return response()->json([
+        'average_success_rate' => $averageSuccessRate
+      ]);
+    }
+}
+  
