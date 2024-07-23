@@ -117,4 +117,10 @@ class UserController extends Controller
 
     
     }
+    
+    //PlAYER LIST AND PORCENTAGE
+    public function getListPlayers(){
+
+
+    }
 }
