@@ -28,8 +28,8 @@ Route::middleware(['auth:api'])->group(function () {
     // player
     Route::middleware(['can:is-player'])->group(function () {
         Route::post('/players/{id}/games', [GameController::class, 'throwDices']); // Un jugador/a específico realiza un tirón de los dados
-        Route::delete('/players/{id}/games', [GameController::class, 'deleteGames']);
-        Route::get('/players/{id}/games', [GameController::class, 'getGames']);
+        Route::delete('/players/{id}/games', [GameController::class, 'deleteGames']);//elimina las tiradas del jugador/a.
+        Route::get('/players/{id}/games', [GameController::class, 'getGames']);//devuelve el listado de jugadas por un jugador/a.
     });
 
     // Admin

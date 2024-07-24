@@ -12,7 +12,6 @@ class GameController extends Controller
     public function throwDices(Request $request, int $id)
     {
         // find and verify user
-        $user = Auth::user();
         $user = User::find($id);
 
 
@@ -74,7 +73,17 @@ class GameController extends Controller
        'status' => true,
        'games' => $gamesData,
       ]);
-  }
+    }
 
+    public function deleteGames($id){
+        
+        $user = User::find($id);
+
+        $user->games()->delete();
+
+        return response()->json([
+         'message' => 'Succesfully deleted'
+        ]);
+    }
     
 }
