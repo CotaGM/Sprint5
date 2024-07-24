@@ -234,7 +234,7 @@ class UserController extends Controller
   }
 
   public function getPlayerList(){
-
+    
     // get players
     $user = User::with('games')
       ->where('role', 'player') // Filtrar solo jugadores
