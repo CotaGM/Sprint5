@@ -32,7 +32,6 @@ class UserController extends Controller
             'nickname' => $request->nickname,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => 'player',
         ]);
 
         return response()->json([
