@@ -54,13 +54,12 @@ class GameController extends Controller
     
     // Finding user
     $user = User::find($id);
-    
+
     if (Auth::id() !== $user->id) {
         return response()->json([
             'message' => 'Unauthorized',
         ], 403);
     }
-
 
     // Amount of games per player 
     $games = $user->games; 
@@ -85,11 +84,19 @@ class GameController extends Controller
         
         $user = User::find($id);
 
+        if (Auth::id() !== $user->id) {
+            return response()->json([
+                'message' => 'Unauthorized',
+            ], 403);
+        }
+
         $user->games()->delete();
 
         return response()->json([
          'message' => 'Succesfully deleted'
         ]);
     }
+
+
     
 }

@@ -129,8 +129,7 @@ class GameControllerTest extends TestCase
     }
     
     #[\PHPUnit\Framework\Attributes\Test]
-    public function a_user_can_get_their_games()
-    {
+    public function a_user_can_get_their_games(){
         // Arrange
         $user = User::factory()->create();
         $games = Game::factory()->count(3)->create(['user_id' => $user->id]);
@@ -162,8 +161,7 @@ class GameControllerTest extends TestCase
     }
 
     #[\PHPUnit\Framework\Attributes\Test]
-    public function a_user_can_get_another_user_games()
-    {
+    public function a_user_can_get_another_user_games(){
         // Arrange
         $user = User::factory()->create();
         $anotherUser = User::factory()->create();
@@ -186,4 +184,53 @@ class GameControllerTest extends TestCase
                      'message' => 'Unauthorized',
                  ]);
     }
+
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function a_user_can_delete_their_games(){
+        // Arrange
+        $user = User::factory()->create();
+        $games = Game::factory()->count(3)->create(['user_id' => $user->id]);
+
+        // Authenticate the user
+        $this->actingAs($user);
+
+        // Create a token for the user
+        $userToken = $user->createToken('UserToken')->accessToken;
+
+        // Act as the user 
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $userToken,
+        ])->deleteJson('/api/players/' . $user->id . '/games');
+
+        // Assert
+        $response->assertStatus(200)
+                 ->assertJson([
+                    'message' => 'Succesfully deleted'
+                 ]);
+    }
+
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function a_user_can_delete_another_user_games(){
+        // Arrange
+        $user = User::factory()->create();
+        $anotherUser = User::factory()->create();
+        $games = Game::factory()->count(3)->create(['user_id' => $user->id]);
+
+        // Authenticate the user
+        $this->actingAs($user);
+
+        // Create a token for the user
+        $userToken = $user->createToken('UserToken')->accessToken;
+
+        // Act as the user and delete other games
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $userToken,
+        ])->deleteJson('/api/players/' . $anotherUser->id . '/games');
+
+        // Assert
+        $response->assertStatus(403)
+                 ->assertJson([
+                     'message' => 'Unauthorized',
+                 ]);
+        }
 }
