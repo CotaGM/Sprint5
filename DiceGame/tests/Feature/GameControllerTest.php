@@ -74,7 +74,7 @@ class GameControllerTest extends TestCase
         // Authenticate the user
         $this->actingAs($user);
         
-        // Create a token for the user (assuming you are using Laravel Passport)
+        // Create a token for the user 
         $userToken = $user->createToken('UserToken')->accessToken;
 
         // Act as a user
@@ -87,7 +87,7 @@ class GameControllerTest extends TestCase
                  ->assertJsonStructure([
                      'message',
                      'game' => [
-                         'nickname', // Assuming 'nickname' is correct, change to 'user_name' if needed
+                         'nickname', 
                          'game' => [
                              'id',
                              'user_id',
@@ -127,5 +127,63 @@ class GameControllerTest extends TestCase
                      'message' => 'Unauthorized',
                  ]);
     }
+    
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function a_user_can_get_their_games()
+    {
+        // Arrange
+        $user = User::factory()->create();
+        $games = Game::factory()->count(3)->create(['user_id' => $user->id]);
 
+        // Authenticate the user
+        $this->actingAs($user);
+
+        // Create a token for the user
+        $userToken = $user->createToken('UserToken')->accessToken;
+
+        // Act as the user 
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $userToken,
+        ])->getJson('/api/players/' . $user->id . '/games');
+
+        // Assert
+        $response->assertStatus(200)
+                 ->assertJson([
+                     'status' => true,
+                     'games' => $games->map(function ($game) {
+                         return [
+                             'id' => $game->id,
+                             'dice1' => $game->dice1,
+                             'dice2' => $game->dice2,
+                             'result' => $game->result,
+                         ];
+                     })->toArray(),
+                 ]);
+    }
+
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function a_user_can_get_another_user_games()
+    {
+        // Arrange
+        $user = User::factory()->create();
+        $anotherUser = User::factory()->create();
+        $games = Game::factory()->count(3)->create(['user_id' => $user->id]);
+
+        // Authenticate the user
+        $this->actingAs($user);
+
+        // Create a token for the user
+        $userToken = $user->createToken('UserToken')->accessToken;
+
+        // Act as other user and try to get other games
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $userToken,
+        ])->getJson('/api/players/' . $anotherUser->id . '/games');
+
+        // Assert
+        $response->assertStatus(403)
+                 ->assertJson([
+                     'message' => 'Unauthorized',
+                 ]);
+    }
 }
