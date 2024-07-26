@@ -61,6 +61,13 @@ class GameController extends Controller
         ], 403);
     }
 
+    if (!$user) {
+        return response()->json([
+            'status' => false,
+            'message' => 'User not found',
+        ], 404);
+    }
+
     // Amount of games per player 
     $games = $user->games; 
 
@@ -88,6 +95,13 @@ class GameController extends Controller
             return response()->json([
                 'message' => 'Unauthorized',
             ], 403);
+        }
+
+        if (!$user) {
+            return response()->json([
+                'status' => false,
+                'message' => 'User not found',
+            ], 404);
         }
 
         $user->games()->delete();

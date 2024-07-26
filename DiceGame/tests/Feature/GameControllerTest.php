@@ -30,7 +30,7 @@ class GameControllerTest extends TestCase
     protected function setUp(): void{
          parent::setUp();
  
-         // Configurar el cliente de acceso personal para Passport
+         // configure the personal access
          $clientRepository = new PassportClientRepository();
          $clientRepository->createPersonalAccessClient(
              null, 'Test Personal Access Client', 'http://localhost/'
@@ -65,7 +65,7 @@ class GameControllerTest extends TestCase
     }
 
     #[\PHPUnit\Framework\Attributes\Test]
-    public function a_user_can_throw_dices(){
+    public function a_user_throw_dices(){
         $this->withoutExceptionHandling();
 
         // Create the user on the db

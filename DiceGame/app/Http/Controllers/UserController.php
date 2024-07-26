@@ -36,7 +36,7 @@ class UserController extends Controller
 
         return response()->json([
             'status' => true,
-            'message' => 'User registered succesfully!',
+            'message' => 'User registered successfully!',
         ]);
         
     }
@@ -46,6 +46,14 @@ class UserController extends Controller
         
       // Find user
       $user = User::find($id);
+      
+      if ($request->user()->id !== $user->id) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Unauthorized'
+        ], 403);
+    }
+      
       if (!$user) {
         return response()->json([
           'status' => false,
@@ -55,7 +63,7 @@ class UserController extends Controller
 
       //Validation
       $request->validate([
-      'nickname' => 'nullable|string|max:100|unique:users',
+        'nickname' => 'nullable|string|max:100|unique:users,nickname,' . $user->id,
       ]);
   
       //Anonymous user
@@ -68,8 +76,7 @@ class UserController extends Controller
         'status' => true,
         'message' => 'User nickname updated successfully',
         'user' => $user,
-      ]);
-
+    ]);
   }
 
     //LOGIN (POST) [email, password]
@@ -94,7 +101,7 @@ class UserController extends Controller
             
             return response()->json([
               'status' => true,
-              'message' => "User logged in succesfully",
+              'message' => "User logged in successfully",
               'token' => $token  
             ]);
             
@@ -236,7 +243,7 @@ class UserController extends Controller
     
     // get players
     $user = User::with('games')
-      ->where('role', 'player') // Filtrar solo jugadores
+      ->where('role', 'player') 
       ->get();
 
     // Mapping all players
@@ -260,6 +267,6 @@ class UserController extends Controller
     ]);
   }
 
-
+  
 }
 
