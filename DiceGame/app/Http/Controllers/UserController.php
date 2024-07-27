@@ -229,43 +229,41 @@ class UserController extends Controller
       }
     }
 
-    return response()->json([
-      'player' => [
-      'id' => $bestPlayer->id,
-      'nickname' => $bestPlayer->nickname,
-      'success_rate' => $highestRate
-      ]
-    ]);
-  }
+      return response()->json([
+       'player' => [
+       'id' => $bestPlayer->id,
+       'nickname' => $bestPlayer->nickname,
+       'success_rate' => $highestRate
+       ]
+      ]);
+    }
 
-  public function getPlayerList(){
+    public function getPlayerList(){
     
-    // get players
-    $user = User::with('games')
-      ->where('role', 'player') 
-      ->get();
+      // get players
+      $user = User::with('games')
+       ->where('role', 'player') 
+       ->get();
 
-    // Mapping all players
-    $playersData = $user->map(function ($user) {
+      // Mapping all players
+      $playersData = $user->map(function ($user) {
       $totalGames = $user->games->count();
       $totalWins = $user->games->where('result', true)->count();
 
       // Percentage
       $averageSuccessRate = $totalGames > 0 ? ($totalWins / $totalGames) * 100 : 0;
 
-      return [
+       return [
         'id' => $user->id,
         'nickname' => $user->nickname,
         'success_rate' => $averageSuccessRate
-      ];
+       ];
       
-    });
+      });
 
-    return response()->json([
-      'players' => $playersData
-    ]);
-  }
-
-  
+      return response()->json([
+       'players' => $playersData
+      ]);
+    } 
 }
 

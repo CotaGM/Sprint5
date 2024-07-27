@@ -5,10 +5,7 @@ namespace Tests\Feature;
 use App\Models\User;
 use App\Models\Game;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Support\Facades\Gate;
 use Laravel\Passport\ClientRepository as PassportClientRepository;
-use Laravel\Passport\Passport;
 use Tests\TestCase;
 
 class UserControllerTest extends TestCase
@@ -27,7 +24,6 @@ class UserControllerTest extends TestCase
 
         $response->assertStatus(200);
     }
-
 
     protected function setUp(): void{
         parent::setUp();

@@ -106,6 +106,7 @@ class GameControllerTest extends TestCase
 
     #[\PHPUnit\Framework\Attributes\Test]
     public function a_user_cannot_throw_dices_for_another_user(){
+        
         // Create the users in the database
         $user = User::factory()->create();
         $anotherUser = User::factory()->create();
@@ -130,6 +131,7 @@ class GameControllerTest extends TestCase
     
     #[\PHPUnit\Framework\Attributes\Test]
     public function a_user_can_get_their_games(){
+        
         // Arrange
         $user = User::factory()->create();
         $games = Game::factory()->count(3)->create(['user_id' => $user->id]);
@@ -162,6 +164,7 @@ class GameControllerTest extends TestCase
 
     #[\PHPUnit\Framework\Attributes\Test]
     public function a_user_can_get_another_user_games(){
+        
         // Arrange
         $user = User::factory()->create();
         $anotherUser = User::factory()->create();
@@ -187,6 +190,7 @@ class GameControllerTest extends TestCase
 
     #[\PHPUnit\Framework\Attributes\Test]
     public function a_user_can_delete_their_games(){
+        
         // Arrange
         $user = User::factory()->create();
         $games = Game::factory()->count(3)->create(['user_id' => $user->id]);
