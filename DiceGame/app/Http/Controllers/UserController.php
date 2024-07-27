@@ -32,12 +32,11 @@ class UserController extends Controller
             'nickname' => $request->nickname,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => 'player',
         ]);
 
         return response()->json([
             'status' => true,
-            'message' => 'User registered succesfully!',
+            'message' => 'User registered successfully!',
         ]);
         
     }
@@ -47,6 +46,14 @@ class UserController extends Controller
         
       // Find user
       $user = User::find($id);
+      
+      if ($request->user()->id !== $user->id) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Unauthorized'
+        ], 403);
+    }
+      
       if (!$user) {
         return response()->json([
           'status' => false,
@@ -56,7 +63,7 @@ class UserController extends Controller
 
       //Validation
       $request->validate([
-      'nickname' => 'nullable|string|max:100|unique:users',
+        'nickname' => 'nullable|string|max:100|unique:users,nickname,' . $user->id,
       ]);
   
       //Anonymous user
@@ -69,8 +76,7 @@ class UserController extends Controller
         'status' => true,
         'message' => 'User nickname updated successfully',
         'user' => $user,
-      ]);
-
+    ]);
   }
 
     //LOGIN (POST) [email, password]
@@ -95,7 +101,7 @@ class UserController extends Controller
             
             return response()->json([
               'status' => true,
-              'message' => "User logged in succesfully",
+              'message' => "User logged in successfully",
               'token' => $token  
             ]);
             
@@ -154,8 +160,7 @@ class UserController extends Controller
     }
     
     //RANKING(GET)
-    public function getRanking()
-    {
+    public function getRanking(){
       $users = User::all();
       $totalGames = 0;
       $totalWins = 0;
@@ -224,43 +229,41 @@ class UserController extends Controller
       }
     }
 
-    return response()->json([
-      'player' => [
-      'id' => $bestPlayer->id,
-      'nickname' => $bestPlayer->nickname,
-      'success_rate' => $highestRate
-      ]
-    ]);
-  }
+      return response()->json([
+       'player' => [
+       'id' => $bestPlayer->id,
+       'nickname' => $bestPlayer->nickname,
+       'success_rate' => $highestRate
+       ]
+      ]);
+    }
 
-  public function getPlayerList(){
+    public function getPlayerList(){
     
-    // get players
-    $user = User::with('games')
-      ->where('role', 'player') // Filtrar solo jugadores
-      ->get();
+      // get players
+      $user = User::with('games')
+       ->where('role', 'player') 
+       ->get();
 
-    // Mapping all players
-    $playersData = $user->map(function ($user) {
+      // Mapping all players
+      $playersData = $user->map(function ($user) {
       $totalGames = $user->games->count();
       $totalWins = $user->games->where('result', true)->count();
 
       // Percentage
       $averageSuccessRate = $totalGames > 0 ? ($totalWins / $totalGames) * 100 : 0;
 
-      return [
+       return [
         'id' => $user->id,
         'nickname' => $user->nickname,
         'success_rate' => $averageSuccessRate
-      ];
+       ];
       
-    });
+      });
 
-    return response()->json([
-      'players' => $playersData
-    ]);
-  }
-
-
+      return response()->json([
+       'players' => $playersData
+      ]);
+    } 
 }
 
