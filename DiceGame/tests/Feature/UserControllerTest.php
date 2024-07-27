@@ -341,35 +341,118 @@ class UserControllerTest extends TestCase
             ],
         ]);
     }
+
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function player_cannot_view_loser(){
+
+        // Create users 
+        $user1 = User::factory()->create(['nickname' => 'WinnerUser']);
+        $user2 = User::factory()->create(['nickname' => 'LoserUser']);
+    
+        // Create games
+        Game::factory()->count(10)->create(['user_id' => $user1->id, 'result' => true]); 
+        Game::factory()->count(10)->create(['user_id' => $user2->id, 'result' => false]); 
+
+        // Create admin authenticate
+        $admin = User::factory()->create(['role' => 'player']);
+        $playerToken = $admin->createToken('PlayerToken')->accessToken;
+
+        // Make request to get the winner
+        $response = $this->withHeaders([
+         'Authorization' => 'Bearer ' . $playerToken,
+          ])->getJson('/api/players/ranking/loser');
+
+       // Verificar respuesta
+       $response->assertStatus(403)
+         ->assertJson([
+        'message' => 'This action is unauthorized.',
+        ]);
+    }
     
     #[\PHPUnit\Framework\Attributes\Test]
     public function admins_can_view_winner(){
 
-    // Create users 
-    $user1 = User::factory()->create(['nickname' => 'WinnerUser']);
-    $user2 = User::factory()->create(['nickname' => 'LoserUser']);
+        // Create users 
+        $user1 = User::factory()->create(['nickname' => 'WinnerUser']);
+        $user2 = User::factory()->create(['nickname' => 'LoserUser']);
     
-    // Create games
-    Game::factory()->count(10)->create(['user_id' => $user1->id, 'result' => true]); 
-    Game::factory()->count(10)->create(['user_id' => $user2->id, 'result' => false]); 
+        // Create games
+        Game::factory()->count(10)->create(['user_id' => $user1->id, 'result' => true]); 
+        Game::factory()->count(10)->create(['user_id' => $user2->id, 'result' => false]); 
 
-    // Create admin authenticate
-    $admin = User::factory()->create(['role' => 'admin']);
-    $adminToken = $admin->createToken('AdminToken')->accessToken;
+        // Create admin authenticate
+        $admin = User::factory()->create(['role' => 'admin']);
+        $adminToken = $admin->createToken('AdminToken')->accessToken;
 
-    // Make request to get the winner
-    $response = $this->withHeaders([
-        'Authorization' => 'Bearer ' . $adminToken,
-    ])->getJson('/api/players/ranking/winner');
+        // Make request to get the winner
+        $response = $this->withHeaders([
+         'Authorization' => 'Bearer ' . $adminToken,
+          ])->getJson('/api/players/ranking/winner');
 
-    // Assert 
-    $response->assertStatus(200)
-        ->assertJsonStructure([
+        // Assert 
+        $response->assertStatus(200)
+          ->assertJsonStructure([
             'player' => [
                 'id',
                 'nickname',
                 'success_rate',
             ],
+          ]);
+    }
+
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function player_cannot_view_winner(){
+
+        // Create users 
+        $user1 = User::factory()->create(['nickname' => 'WinnerUser']);
+        $user2 = User::factory()->create(['nickname' => 'LoserUser']);
+    
+        // Create games
+        Game::factory()->count(10)->create(['user_id' => $user1->id, 'result' => true]); 
+        Game::factory()->count(10)->create(['user_id' => $user2->id, 'result' => false]); 
+
+        // Create admin authenticate
+        $admin = User::factory()->create(['role' => 'player']);
+        $adminToken = $admin->createToken('AdminToken')->accessToken;
+
+        // Make request to get the winner
+        $response = $this->withHeaders([
+         'Authorization' => 'Bearer ' . $adminToken,
+          ])->getJson('/api/players/ranking/winner');
+
+
+        // Verificar respuesta
+        $response->assertStatus(403)
+         ->assertJson([
+         'message' => 'This action is unauthorized.',
         ]);
     }
+
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function admins_can_view_players_list(){
+
+        // Create users 
+        $user1 = User::factory()->create(['nickname' => 'WinnerUser']);
+        $user2 = User::factory()->create(['nickname' => 'LoserUser']);
+    
+        // Create games
+        Game::factory()->count(10)->create(['user_id' => $user1->id, 'result' => true]); 
+        Game::factory()->count(10)->create(['user_id' => $user2->id, 'result' => false]); 
+
+        // Create admin authenticate
+        $admin = User::factory()->create(['role' => 'admin']);
+        $adminToken = $admin->createToken('AdminToken')->accessToken;
+
+        // Make request to get the winner
+        $response = $this->withHeaders([
+         'Authorization' => 'Bearer ' . $adminToken,
+          ])->getJson('/api/players');
+
+        // Assert 
+        $response->assertStatus(200)
+          ->assertJsonStructure([
+            'players' 
+          ]);
+    }
+
 }
