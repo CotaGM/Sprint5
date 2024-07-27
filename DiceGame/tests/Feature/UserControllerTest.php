@@ -29,8 +29,7 @@ class UserControllerTest extends TestCase
     }
 
 
-    protected function setUp(): void
-    {
+    protected function setUp(): void{
         parent::setUp();
 
         // Personal access
@@ -39,23 +38,6 @@ class UserControllerTest extends TestCase
             null, 'Test Personal Access Client', 'http://localhost'
         );
 
-        //admin user for test
-        $this->admin = User::create([
-            'nickname' => 'Admin',
-            'email' => 'admin@example.com',
-            'password' => bcrypt('admin123'),
-        ]);
-        $this->admin->role = 'admin';
-        $this->admin->save();
-        
-        $this->adminToken = $this->admin->createToken('AdminToken')->accessToken;
-       
-        //Player user for test
-        $this->anotherUser = User::factory()->create([
-            'nickname' => 'Player',
-            'email' => 'player@example.com',
-            'password' => bcrypt('player123'),
-        ]);
     }
 
     #[\PHPUnit\Framework\Attributes\Test]
@@ -354,8 +336,8 @@ class UserControllerTest extends TestCase
         Game::factory()->count(10)->create(['user_id' => $user2->id, 'result' => false]); 
 
         // Create admin authenticate
-        $admin = User::factory()->create(['role' => 'player']);
-        $playerToken = $admin->createToken('PlayerToken')->accessToken;
+        $player = User::factory()->create(['role' => 'player']);
+        $playerToken = $player->createToken('PlayerToken')->accessToken;
 
         // Make request to get the winner
         $response = $this->withHeaders([
@@ -412,12 +394,12 @@ class UserControllerTest extends TestCase
         Game::factory()->count(10)->create(['user_id' => $user2->id, 'result' => false]); 
 
         // Create admin authenticate
-        $admin = User::factory()->create(['role' => 'player']);
-        $adminToken = $admin->createToken('AdminToken')->accessToken;
+        $player = User::factory()->create(['role' => 'player']);
+        $playerToken = $player->createToken('PlayerToken')->accessToken;
 
         // Make request to get the winner
         $response = $this->withHeaders([
-         'Authorization' => 'Bearer ' . $adminToken,
+         'Authorization' => 'Bearer ' . $playerToken,
           ])->getJson('/api/players/ranking/winner');
 
 
@@ -453,6 +435,33 @@ class UserControllerTest extends TestCase
           ->assertJsonStructure([
             'players' 
           ]);
+    }
+
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function player_can_view_players_list(){
+
+        // Create users 
+        $user1 = User::factory()->create(['nickname' => 'WinnerUser']);
+        $user2 = User::factory()->create(['nickname' => 'LoserUser']);
+    
+        // Create games
+        Game::factory()->count(10)->create(['user_id' => $user1->id, 'result' => true]); 
+        Game::factory()->count(10)->create(['user_id' => $user2->id, 'result' => false]); 
+
+        // Create admin authenticate
+        $player = User::factory()->create(['role' => 'player']);
+        $playerToken = $player->createToken('PlayerToken')->accessToken;
+
+        // Make request to get the winner
+        $response = $this->withHeaders([
+         'Authorization' => 'Bearer ' . $playerToken,
+          ])->getJson('/api/players');
+
+        // Verificar respuesta
+        $response->assertStatus(403)
+         ->assertJson([
+         'message' => 'This action is unauthorized.',
+        ]);
     }
 
 }
