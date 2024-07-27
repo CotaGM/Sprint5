@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\User;
+use App\Models\Game;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Gate;
@@ -237,6 +238,138 @@ class UserControllerTest extends TestCase
                     'id' => $user->id,
                 ],
            ]);
-    } 
-}
+    }
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function a_user_can_refresh_their_token(){
 
+    // Create user
+    $user = User::factory()->create();
+
+    // Authentication
+    $this->actingAs($user);
+
+    // Create token
+    $userToken = $user->createToken('UserToken')->accessToken;
+
+    // refresh token
+    $response = $this->withHeaders([
+        'Authorization' => 'Bearer ' . $userToken,
+    ])->getJson('/api/refresh-token');
+
+    $response->assertStatus(200)
+        ->assertJsonStructure([
+            'status',
+            'message',
+            'token',
+        ])
+        ->assertJson([
+            'status' => true,
+            'message' => 'Refresh token',
+        ]);
+    }
+  
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function a_user_can_logout(){
+    
+        // Create user
+        $user = User::factory()->create();
+
+        // Create token
+        $userToken = $user->createToken('UserToken')->accessToken;
+
+        // refresh token
+        $response = $this->withHeaders([
+          'Authorization' => 'Bearer ' . $userToken,
+        ])->getJson('/api/logout');
+
+
+        $response->assertStatus(200)
+            ->assertJson([
+                 'status' => true,
+                 'message' => 'User logged out',
+             ]);
+    }
+
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function admins_can_view_ranking(){
+
+        // Create user
+        $admin = User::factory()->create([
+              'role' => 'admin',
+        ]);
+
+        // Create token
+        $adminToken = $admin->createToken('AdminToken')->accessToken;
+
+        // Solicitation
+        $response = $this->withHeaders([
+          'Authorization' => 'Bearer ' . $adminToken,
+        ])->getJson('/api/players/ranking');
+
+        $response->assertStatus(200)
+             ->assertJsonStructure([
+                 'average_success_rate',
+            ]);
+    }
+
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function admins_can_view_loser(){
+      // Create users 
+    $user1 = User::factory()->create(['nickname' => 'WinnerUser']);
+    $user2 = User::factory()->create(['nickname' => 'LoserUser']);
+    
+    // Create games
+    Game::factory()->count(10)->create(['user_id' => $user1->id, 'result' => true]); 
+    Game::factory()->count(10)->create(['user_id' => $user2->id, 'result' => false]); 
+
+    // Create admin authenticate
+    $admin = User::factory()->create(['role' => 'admin']);
+    $adminToken = $admin->createToken('AdminToken')->accessToken;
+
+    // Make request to get the winner
+    $response = $this->withHeaders([
+        'Authorization' => 'Bearer ' . $adminToken,
+    ])->getJson('/api/players/ranking/loser');
+
+    // Assert 
+    $response->assertStatus(200)
+        ->assertJsonStructure([
+            'player' => [
+                'id',
+                'nickname',
+                'success_rate',
+            ],
+        ]);
+    }
+    
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function admins_can_view_winner(){
+
+    // Create users 
+    $user1 = User::factory()->create(['nickname' => 'WinnerUser']);
+    $user2 = User::factory()->create(['nickname' => 'LoserUser']);
+    
+    // Create games
+    Game::factory()->count(10)->create(['user_id' => $user1->id, 'result' => true]); 
+    Game::factory()->count(10)->create(['user_id' => $user2->id, 'result' => false]); 
+
+    // Create admin authenticate
+    $admin = User::factory()->create(['role' => 'admin']);
+    $adminToken = $admin->createToken('AdminToken')->accessToken;
+
+    // Make request to get the winner
+    $response = $this->withHeaders([
+        'Authorization' => 'Bearer ' . $adminToken,
+    ])->getJson('/api/players/ranking/winner');
+
+    // Assert 
+    $response->assertStatus(200)
+        ->assertJsonStructure([
+            'player' => [
+                'id',
+                'nickname',
+                'success_rate',
+            ],
+        ]);
+    }
+}

@@ -160,8 +160,7 @@ class UserController extends Controller
     }
     
     //RANKING(GET)
-    public function getRanking()
-    {
+    public function getRanking(){
       $users = User::all();
       $totalGames = 0;
       $totalWins = 0;
